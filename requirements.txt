@@ -1,0 +1,7 @@
+torch
+diffusers
+transformers
+safetensors
+accelerate
+spaces
+peft
