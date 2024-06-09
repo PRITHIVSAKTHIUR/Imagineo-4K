@@ -12,7 +12,9 @@ header: mini
 short_description: Collage Template + Grid + Style
 ---
 
-![alt text](assets/y.png)
+
+![alt text](images/y.png)
+
  
 Check out the configuration reference at https://huggingface.co/docs/hub/spaces-config-reference
 
