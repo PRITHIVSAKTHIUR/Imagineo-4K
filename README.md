@@ -12,6 +12,8 @@ header: mini
 short_description: Collage Template + Grid + Style
 ---
 
+![Image 4](assets/y.png)
+ 
 Check out the configuration reference at https://huggingface.co/docs/hub/spaces-config-reference
 
 Spaces: https://huggingface.co/spaces/prithivMLmods/Instant-Collage
