@@ -18,18 +18,18 @@ short_description: Collage Template + Grid + Style
  
 Check out the configuration reference at https://huggingface.co/docs/hub/spaces-config-reference
 
-Spaces: https://huggingface.co/spaces/prithivMLmods/Instant-Collage
+Spaces: https://huggingface.co/spaces/prithivMLmods/Midjourney
 
 Take Clone : 
 
     # Make sure you have git-lfs installed (https://git-lfs.com)
     git lfs install
     
-    git clone https://huggingface.co/spaces/prithivMLmods/Instant-Collage
+    git clone https://huggingface.co/spaces/prithivMLmods/Midjourney
     
     # If you want to clone without large files - just their pointers
     
-    GIT_LFS_SKIP_SMUDGE=1 git clone https://huggingface.co/spaces/prithivMLmods/Instant-Collage
+    GIT_LFS_SKIP_SMUDGE=1 git clone https://huggingface.co/spaces/prithivMLmods/Midjourney
 
 ## Sample Images 
 
