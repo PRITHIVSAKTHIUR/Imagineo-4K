@@ -1,4 +1,7 @@
-#path1.0398
+#!/usr/bin/env python
+#patch 0.04
+#Func() Dalle Collage Moved Midjourney Space 
+#Pruned DalleCollage Space 
 import os
 import random
 import uuid
@@ -12,7 +15,7 @@ import torch
 from diffusers import DiffusionPipeline
 from typing import Tuple
 
-# BaseConditions
+#BaseConditions--
 bad_words = json.loads(os.getenv('BAD_WORDS', "[]"))
 bad_words_negative = json.loads(os.getenv('BAD_WORDS_NEGATIVE', "[]"))
 default_negative = os.getenv("default_negative","")
@@ -37,83 +40,76 @@ style_list = [
         "prompt": "hyper-realistic 4K image of {prompt}. ultra-detailed, lifelike, high-resolution, sharp, vibrant colors, photorealistic",
         "negative_prompt": "cartoonish, low resolution, blurry, simplistic, abstract, deformed, ugly",
     },
+
     {
-        "name": "3D Model",
-        "prompt": "professional 3d model {prompt}. octane render, highly detailed, volumetric, dramatic lighting",
-        "negative_prompt": "ugly, deformed, noisy, low poly, blurry, painting",
+        "name": "HD+",
+        "prompt": "hyper-realistic 2K image of {prompt}. ultra-detailed, lifelike, high-resolution, sharp, vibrant colors, photorealistic",
+        "negative_prompt": "cartoonish, low resolution, blurry, simplistic, abstract, deformed, ugly",
+    },
+    
+    {
+        "name": "Style Zero",
+        "prompt": "{prompt}",
+        "negative_prompt": "",
     },
 ]
 
 collage_style_list = [
-
-
+    {
+        "name": "Hi-Res",
+        "prompt": "hyper-realistic 8K image of {prompt}. ultra-detailed, lifelike, high-resolution, sharp, vibrant colors, photorealistic",
+        "negative_prompt": "cartoonish, low resolution, blurry, simplistic, abstract, deformed, ugly",
+    },
     {
         "name": "B & W",
         "prompt": "black and white collage of {prompt}. monochromatic, timeless, classic, dramatic contrast",
         "negative_prompt": "colorful, vibrant, bright, flashy",
     },
-
     {
         "name": "Polaroid",
         "prompt": "collage of polaroid photos featuring {prompt}. vintage style, high contrast, nostalgic, instant film aesthetic",
         "negative_prompt": "digital, modern, low quality, blurry",
     },
-    
     {
         "name": "Watercolor",
         "prompt": "watercolor collage of {prompt}. soft edges, translucent colors, painterly effects",
         "negative_prompt": "digital, sharp lines, solid colors",
     },
-
     {
         "name": "Cinematic",
         "prompt": "cinematic collage of {prompt}. film stills, movie posters, dramatic lighting",
         "negative_prompt": "static, lifeless, mundane",
     },
-    
     {
         "name": "Nostalgic",
         "prompt": "nostalgic collage of {prompt}. retro imagery, vintage objects, sentimental journey",
         "negative_prompt": "contemporary, futuristic, forward-looking",
     },
-
     {
         "name": "Vintage",
         "prompt": "vintage collage of {prompt}. aged paper, sepia tones, retro imagery, antique vibes",
         "negative_prompt": "modern, contemporary, futuristic, high-tech",
     },
-    
     {
-    "name": "StoryBook",
-    "prompt": "storybook collage of {prompt}. whimsical illustrations, handwritten text, fairy tale motifs",
-    "negative_prompt": "technical, sterile, devoid of imagination",
+        "name": "Scrapbook",
+        "prompt": "scrapbook style collage of {prompt}. mixed media, hand-cut elements, textures, paper, stickers, doodles",
+        "negative_prompt": "clean, digital, modern, low quality",
     },
-
-    
     {
         "name": "NeoNGlow",
         "prompt": "neon glow collage of {prompt}. vibrant colors, glowing effects, futuristic vibes",
         "negative_prompt": "dull, muted colors, vintage, retro",
     },
-    
     {
         "name": "Geometric",
         "prompt": "geometric collage of {prompt}. abstract shapes, colorful, sharp edges, modern design, high quality",
         "negative_prompt": "blurry, low quality, traditional, dull",
     },
-    
     {
-    "name": "ComicBook",
-    "prompt": "comic book-style collage of {prompt}. dynamic panels, speech bubbles, bold lines, vibrant colors",
-    "negative_prompt": "static, monotonous, muted colors",
+        "name": "Thematic",
+        "prompt": "thematic collage of {prompt}. cohesive theme, well-organized, matching colors, creative layout",
+        "negative_prompt": "random, messy, unorganized, clashing colors",
     },
-
-    {
-        "name": "Retro Pop",
-        "prompt": "retro pop art collage of {prompt}. bold colors, comic book style, halftone dots, vintage ads",
-        "negative_prompt": "subdued colors, minimalist, modern, subtle",
-    },
-
 
     {
         "name": "No Style",
@@ -122,18 +118,57 @@ collage_style_list = [
     },
 ]
 
+filters = {
+    "Vivid": {
+        "prompt": "extra vivid {prompt}",
+        "negative_prompt": "washed out, dull"
+    },
+    "Playa": {
+        "prompt": "{prompt} set in a vast playa",
+        "negative_prompt": "forest, mountains"
+    },
+    "Desert": {
+        "prompt": "{prompt} set in a desert landscape",
+        "negative_prompt": "ocean, city"
+    },
+    "West": {
+        "prompt": "{prompt} with a western theme",
+        "negative_prompt": "eastern, modern"
+    },
+    "Blush": {
+        "prompt": "{prompt} with a soft blush color palette",
+        "negative_prompt": "harsh colors, neon"
+    },
+    "Minimalist": {
+        "prompt": "{prompt} with a minimalist design",
+        "negative_prompt": "cluttered, ornate"
+    },
+
+    "Zero filter": {
+        "prompt": "{prompt}",
+        "negative_prompt": ""
+    },
+    
+    
+}
+
 styles = {k["name"]: (k["prompt"], k["negative_prompt"]) for k in style_list}
 collage_styles = {k["name"]: (k["prompt"], k["negative_prompt"]) for k in collage_style_list}
+filter_styles = {k: (v["prompt"], v["negative_prompt"]) for k, v in filters.items()}
 STYLE_NAMES = list(styles.keys())
 COLLAGE_STYLE_NAMES = list(collage_styles.keys())
+FILTER_NAMES = list(filters.keys())
 DEFAULT_STYLE_NAME = "3840 x 2160"
-DEFAULT_COLLAGE_STYLE_NAME = "Cinematic"
+DEFAULT_COLLAGE_STYLE_NAME = "Hi-Res"
+DEFAULT_FILTER_NAME = "Vivid"
 
 def apply_style(style_name: str, positive: str, negative: str = "") -> Tuple[str, str]:
     if style_name in styles:
         p, n = styles.get(style_name, styles[DEFAULT_STYLE_NAME])
     elif style_name in collage_styles:
         p, n = collage_styles.get(style_name, collage_styles[DEFAULT_COLLAGE_STYLE_NAME])
+    elif style_name in filter_styles:
+        p, n = filter_styles.get(style_name, filter_styles[DEFAULT_FILTER_NAME])
     else:
         p, n = styles[DEFAULT_STYLE_NAME]
     
@@ -141,7 +176,14 @@ def apply_style(style_name: str, positive: str, negative: str = "") -> Tuple[str
         negative = ""
     return p.replace("{prompt}", positive), n + negative
 
-DESCRIPTION = """"""
+    
+
+DESCRIPTION = """## MidJourney
+
+Drop your best results in the community: [rb.gy/klkbs7](http://rb.gy/klkbs7), Have you tried the stable hamster space? [rb.gy/hfrm2f](http://rb.gy/hfrm2f)
+"""
+
+
 if not torch.cuda.is_available():
     DESCRIPTION += "\n<p>⚠️Running on CPU, This may not work on CPU.</p>"
 
@@ -155,7 +197,7 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 if torch.cuda.is_available():
     pipe = DiffusionPipeline.from_pretrained(
-        "Your mode goes here++++++",
+        "----you model goes here-----",
         torch_dtype=torch.float16,
         use_safetensors=True,
         add_watermarker=False,
@@ -187,6 +229,7 @@ def generate(
     use_negative_prompt: bool = False,
     style: str = DEFAULT_STYLE_NAME,
     collage_style: str = DEFAULT_COLLAGE_STYLE_NAME,
+    filter_name: str = DEFAULT_FILTER_NAME,
     grid_size: str = "2x2",
     seed: int = 0,
     width: int = 1024,
@@ -201,6 +244,8 @@ def generate(
     
     if collage_style != "No Style":
         prompt, negative_prompt = apply_style(collage_style, prompt, negative_prompt)
+    elif filter_name != "No Filter":
+        prompt, negative_prompt = apply_style(filter_name, prompt, negative_prompt)
     else:
         prompt, negative_prompt = apply_style(style, prompt, negative_prompt)
     
@@ -229,7 +274,7 @@ def generate(
         "width": width,
         "height": height,
         "guidance_scale": guidance_scale,
-        "num_inference_steps": 25,
+        "num_inference_steps": 20,
         "generator": generator,
         "num_images_per_prompt": num_images,
         "use_resolution_binning": use_resolution_binning,
@@ -249,17 +294,17 @@ def generate(
     return [unique_name], seed
 
 examples = [
-
     "Portrait of a beautiful woman in a hat, summer outfit, with freckles on her face, in a close up shot, with sunlight, outdoors, in soft light, with a beach background, looking at the camera, with high resolution photography, in the style of Hasselblad X2D50c --ar 85:128 --v 6.0 --style raw",
-    "Dragon ball, portrait of dr goku, in the style of street art aesthetic, cute cartoonish designs, photo-realistic techniques, dark red, childhood arcadias, anime aesthetic, cartoon-like figures --ar 73:98 --stylize 750 --v 6"
-    
+    "3d image, cute girl, in the style of Pixar --ar 1:2 --stylize 750, 4K resolution highlights, Sharp focus, octane render, ray tracing, Ultra-High-Definition, 8k, UHD, HDR, (Masterpiece:1.5), (best quality:1.5)",
+    "Cold coffee in a cup bokeh --ar 85:128 --v 6.0 --style raw5, 4K, Photo-Realistic",
+    "Closeup of blonde woman depth of field, bokeh, shallow focus, minimalism, fujifilm xh2s with Canon EF lens, cinematic --ar 85:128 --v 6.0 --style raw"
 ]
 
 css = '''
-.gradio-container{max-width: 560px !important}
+.gradio-container{max-width: 670px !important}
 h1{text-align:center}
 '''
-with gr.Blocks(css=css, theme="xiaobaiyuan/theme_brief") as demo:
+with gr.Blocks(css=css, theme="bethecloud/storj_theme") as demo:
     gr.Markdown(DESCRIPTION)
     gr.DuplicateButton(
         value="Duplicate Space for private use",
@@ -278,6 +323,27 @@ with gr.Blocks(css=css, theme="xiaobaiyuan/theme_brief") as demo:
             run_button = gr.Button("Run")
         result = gr.Gallery(label="Grid", columns=1, preview=True)
 
+
+    with gr.Row(visible=True):
+        filter_selection = gr.Radio(
+            show_label=True,
+            container=True,
+            interactive=True,
+            choices=FILTER_NAMES,
+            value=DEFAULT_FILTER_NAME,
+            label="Filter Type",
+        )
+
+    with gr.Row(visible=True):
+        style_selection = gr.Radio(
+            show_label=True,
+            container=True,
+            interactive=True,
+            choices=STYLE_NAMES,
+            value=DEFAULT_STYLE_NAME,
+            label="Quality Style",
+        )
+
     with gr.Row(visible=True):
         collage_style_selection = gr.Radio(
             show_label=True,
@@ -290,19 +356,10 @@ with gr.Blocks(css=css, theme="xiaobaiyuan/theme_brief") as demo:
     with gr.Row(visible=True):
         grid_size_selection = gr.Dropdown(
             choices=["2x1", "1x2", "2x2", "2x3", "3x2", "1x1"],
-            value="2x3",
+            value="2x2",
             label="Grid Size"
         )
-    with gr.Row(visible=True):
-        style_selection = gr.Radio(
-            show_label=True,
-            container=True,
-            interactive=True,
-            choices=STYLE_NAMES,
-            value=DEFAULT_STYLE_NAME,
-            label="Style",
-        )
- 
+
     with gr.Accordion("Advanced options", open=False):
         use_negative_prompt = gr.Checkbox(label="Use negative prompt", value=True, visible=True)
         negative_prompt = gr.Text(
@@ -338,7 +395,6 @@ with gr.Blocks(css=css, theme="xiaobaiyuan/theme_brief") as demo:
         )
         randomize_seed = gr.Checkbox(label="Randomize seed", value=True)
 
-        
         with gr.Row(visible=True):
             width = gr.Slider(
                 label="Width",
@@ -355,8 +411,6 @@ with gr.Blocks(css=css, theme="xiaobaiyuan/theme_brief") as demo:
                 value=1024,
             )
 
-
-            
         with gr.Row():
             guidance_scale = gr.Slider(
                 label="Guidance Scale",
@@ -365,14 +419,13 @@ with gr.Blocks(css=css, theme="xiaobaiyuan/theme_brief") as demo:
                 step=0.1,
                 value=6,
             )
- 
-
 
     gr.Examples(
         examples=examples,
         inputs=prompt,
         outputs=[result, seed],
         fn=generate,
+        #cache_examples=True,
         cache_examples=CACHE_EXAMPLES,
     )
 
@@ -396,6 +449,7 @@ with gr.Blocks(css=css, theme="xiaobaiyuan/theme_brief") as demo:
             use_negative_prompt,
             style_selection,
             collage_style_selection,
+            filter_selection,
             grid_size_selection,
             seed,
             width,
