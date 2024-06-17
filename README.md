@@ -1,5 +1,5 @@
 ---
-title: Midjourney
+title: Midjourney X Instant Collage
 emoji: 🙅🏻
 colorFrom: indigo
 colorTo: green
