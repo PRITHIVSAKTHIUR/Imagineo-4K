@@ -18,7 +18,7 @@ short_description: Collage Template + Grid + Style
  
 Check out the configuration reference at https://huggingface.co/docs/hub/spaces-config-reference
 
-Spaces: https://huggingface.co/spaces/prithivMLmods/Midjourney
+Spaces: https://huggingface.co/spaces/prithivMLmods/IMAGINEO-4K
 
 Take Clone : 
 
