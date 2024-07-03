@@ -13,7 +13,7 @@ short_description: Collage Template + Grid + Style
 ---
 
 
-![alt text](assets/gfh.png)
+![alt text](assets/44.png)
 
  
 Check out the configuration reference at https://huggingface.co/docs/hub/spaces-config-reference
