@@ -1,5 +1,5 @@
 ---
-title: Midjourney X Instant Collage
+title: IMAGINEO 4K
 emoji: 🙅🏻
 colorFrom: indigo
 colorTo: green
