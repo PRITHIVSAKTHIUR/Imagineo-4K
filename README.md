@@ -21,15 +21,15 @@ Check out the configuration reference at https://huggingface.co/docs/hub/spaces-
 Spaces: https://huggingface.co/spaces/prithivMLmods/IMAGINEO-4K
 
 Take Clone : 
-
-    # Make sure you have git-lfs installed (https://git-lfs.com)
-    git lfs install
-    
-    git clone https://huggingface.co/spaces/prithivMLmods/Midjourney
-    
-    # If you want to clone without large files - just their pointers
-    
-    GIT_LFS_SKIP_SMUDGE=1 git clone https://huggingface.co/spaces/prithivMLmods/Midjourney
+     
+     # Make sure you have git-lfs installed (https://git-lfs.com)
+     git lfs install
+     
+     git clone https://huggingface.co/spaces/prithivMLmods/IMAGINEO-4K
+     
+     # If you want to clone without large files - just their pointers
+     
+     GIT_LFS_SKIP_SMUDGE=1 git clone https://huggingface.co/spaces/prithivMLmods/IMAGINEO-4K
 
 ## Sample Images 
 
