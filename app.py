@@ -197,7 +197,7 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 if torch.cuda.is_available():
     pipe = DiffusionPipeline.from_pretrained(
-        "----you model goes here-----",
+        "----you model goes here-----",    #  <<<<---  "SG161222/RealVisXL_V4.0",
         torch_dtype=torch.float16,
         use_safetensors=True,
         add_watermarker=False,
