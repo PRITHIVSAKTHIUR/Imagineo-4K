@@ -1,21 +1,15 @@
-#!/usr/bin/env python
-#patch 0.04
-#Func() Dalle Collage Moved Midjourney Space 
-#Pruned DalleCollage Space 
 import os
 import random
 import uuid
 import json
-
 import gradio as gr
 import numpy as np
 from PIL import Image
 import spaces
 import torch
-from diffusers import DiffusionPipeline
+from diffusers import DiffusionPipeline, StableDiffusionXLPipeline, EulerAncestralDiscreteScheduler
 from typing import Tuple
 
-#BaseConditions--
 bad_words = json.loads(os.getenv('BAD_WORDS', "[]"))
 bad_words_negative = json.loads(os.getenv('BAD_WORDS_NEGATIVE', "[]"))
 default_negative = os.getenv("default_negative","")
@@ -28,6 +22,8 @@ def check_text(prompt, negative=""):
         if i in negative:
             return True
     return False
+
+#Quality/Style-----------------------------------------------------------------------------------------------------------------------------------------------------------Quality/Style
 
 style_list = [
     {
@@ -52,7 +48,10 @@ style_list = [
         "prompt": "{prompt}",
         "negative_prompt": "",
     },
+    
 ]
+
+#Clgstyle--------------------------------------------------------------------------------------------------------------------------------------------------------------Clgstyle
 
 collage_style_list = [
     {
@@ -111,12 +110,82 @@ collage_style_list = [
         "negative_prompt": "random, messy, unorganized, clashing colors",
     },
 
+#DuoTones by Canva --------------------------------------------------------------------------------------------------------------- Alters only the i++ Part / not Zero Tones
+    
+    {
+        "name": "Cherry",
+        "prompt": "Duotone style Cherry tone applied to {prompt}",
+        "negative_prompt": "",
+    },
+    {
+        "name": "Fuchsia",
+        "prompt": "Duotone style Fuchsia tone applied to {prompt}",
+        "negative_prompt": "",
+    },
+    {
+        "name": "Pop",
+        "prompt": "Duotone style Pop tone applied to {prompt}",
+        "negative_prompt": "",
+    },
+    {
+        "name": "Violet",
+        "prompt": "Duotone style Violet applied to {prompt}",
+        "negative_prompt": "",
+    },
+    {
+        "name": "Sea Blue",
+        "prompt": "Duotone style Sea Blue applied to {prompt}",
+        "negative_prompt": "",
+    },
+    {
+        "name": "Sea Green",
+        "prompt": "Duotone style Sea Green applied to {prompt}",
+        "negative_prompt": "",
+    },
+    {
+        "name": "Mustard",
+        "prompt": "Duotone style Mustard applied to {prompt}",
+        "negative_prompt": "",
+    },
+    {
+        "name": "Amber",
+        "prompt": "Duotone style Amber applied to {prompt}",
+        "negative_prompt": "",
+    },
+    {
+        "name": "Pomelo",
+        "prompt": "Duotone style Pomelo applied to {prompt}",
+        "negative_prompt": "",
+    },
+    {
+        "name": "Peppermint",
+        "prompt": "Duotone style Peppermint applied to {prompt}",
+        "negative_prompt": "",
+    },
+    {
+        "name": "Mystic",
+        "prompt": "Duotone style Mystic tone applied to {prompt}",
+        "negative_prompt": "",
+    },
+    {
+        "name": "Pastel",
+        "prompt": "Duotone style Pastel applied to {prompt}",
+        "negative_prompt": "",
+    },
+    {
+        "name": "Coral",
+        "prompt": "Duotone style Coral applied to {prompt}",
+        "negative_prompt": "",
+    },
     {
         "name": "No Style",
         "prompt": "{prompt}",
         "negative_prompt": "",
     },
+    
 ]
+
+#filters------------------------------------------------------------------------------------------------------------------------------------------------filters
 
 filters = {
     "Vivid": {
@@ -155,12 +224,13 @@ filters = {
 styles = {k["name"]: (k["prompt"], k["negative_prompt"]) for k in style_list}
 collage_styles = {k["name"]: (k["prompt"], k["negative_prompt"]) for k in collage_style_list}
 filter_styles = {k: (v["prompt"], v["negative_prompt"]) for k, v in filters.items()}
+
 STYLE_NAMES = list(styles.keys())
 COLLAGE_STYLE_NAMES = list(collage_styles.keys())
 FILTER_NAMES = list(filters.keys())
 DEFAULT_STYLE_NAME = "3840 x 2160"
 DEFAULT_COLLAGE_STYLE_NAME = "Hi-Res"
-DEFAULT_FILTER_NAME = "Vivid"
+DEFAULT_FILTER_NAME = "Zero filter"
 
 def apply_style(style_name: str, positive: str, negative: str = "") -> Tuple[str, str]:
     if style_name in styles:
@@ -176,16 +246,8 @@ def apply_style(style_name: str, positive: str, negative: str = "") -> Tuple[str
         negative = ""
     return p.replace("{prompt}", positive), n + negative
 
-    
-
-DESCRIPTION = """## MidJourney
-
-Drop your best results in the community: [rb.gy/klkbs7](http://rb.gy/klkbs7), Have you tried the stable hamster space? [rb.gy/hfrm2f](http://rb.gy/hfrm2f)
-"""
-
-
 if not torch.cuda.is_available():
-    DESCRIPTION += "\n<p>⚠️Running on CPU, This may not work on CPU.</p>"
+    DESCRIPTION = "\n<p>⚠️Running on CPU, This may not work on CPU.</p>"
 
 MAX_SEED = np.iinfo(np.int32).max
 CACHE_EXAMPLES = torch.cuda.is_available() and os.getenv("CACHE_EXAMPLES", "0") == "1"
@@ -194,10 +256,10 @@ USE_TORCH_COMPILE = os.getenv("USE_TORCH_COMPILE", "0") == "1"
 ENABLE_CPU_OFFLOAD = os.getenv("ENABLE_CPU_OFFLOAD", "0") == "1"
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-
+#Compile
 if torch.cuda.is_available():
-    pipe = DiffusionPipeline.from_pretrained(
-        "----you model goes here-----",    #  <<<<---  "SG161222/RealVisXL_V4.0",
+    pipe = StableDiffusionXLPipeline.from_pretrained(
+        "SG161222/RealVisXL_V5.0_Lightning", # / SG161222/RealVisXL_V4.0 / SG161222/RealVisXL_V4.0_Lightning 
         torch_dtype=torch.float16,
         use_safetensors=True,
         add_watermarker=False,
@@ -216,7 +278,7 @@ if torch.cuda.is_available():
 
 def save_image(img, path):
     img.save(path)
-
+#seeding
 def randomize_seed_fn(seed: int, randomize_seed: bool) -> int:
     if randomize_seed:
         seed = random.randint(0, MAX_SEED)
@@ -274,7 +336,7 @@ def generate(
         "width": width,
         "height": height,
         "guidance_scale": guidance_scale,
-        "num_inference_steps": 20,
+        "num_inference_steps": 30,
         "generator": generator,
         "num_images_per_prompt": num_images,
         "use_resolution_binning": use_resolution_binning,
@@ -294,25 +356,30 @@ def generate(
     return [unique_name], seed
 
 examples = [
-    "Portrait of a beautiful woman in a hat, summer outfit, with freckles on her face, in a close up shot, with sunlight, outdoors, in soft light, with a beach background, looking at the camera, with high resolution photography, in the style of Hasselblad X2D50c --ar 85:128 --v 6.0 --style raw",
+
+    "Chocolate dripping from a donut against a yellow background, in the style of brocore, hyper-realistic oil --ar 2:3 --q 2 --s 750 --v 5  --ar 2:3 --q 2 --s 750 --v 5",
     "3d image, cute girl, in the style of Pixar --ar 1:2 --stylize 750, 4K resolution highlights, Sharp focus, octane render, ray tracing, Ultra-High-Definition, 8k, UHD, HDR, (Masterpiece:1.5), (best quality:1.5)",
-    "Cold coffee in a cup bokeh --ar 85:128 --v 6.0 --style raw5, 4K, Photo-Realistic",
-    "Closeup of blonde woman depth of field, bokeh, shallow focus, minimalism, fujifilm xh2s with Canon EF lens, cinematic --ar 85:128 --v 6.0 --style raw"
+    "Cold coffee in a cup bokeh --ar 85:128 --v 6.0 --style raw5,4k",
+    "Food photography of a milk shake with flying strawberrys against a pink background, professionally studio shot with cinematic lighting. The image is in the style of a professional studio shot --ar 85:128 --v 6.0 --style raw"
+    
 ]
 
 css = '''
-.gradio-container{max-width: 670px !important}
+.gradio-container{max-width: 888px !important}
 h1{text-align:center}
+
+.submit-btn {
+    background-color: #ec7063 !important;
+    color: white !important;
+}
+.submit-btn:hover {
+    background-color: #e74c3c !important;
+}
 '''
+
 with gr.Blocks(css=css, theme="bethecloud/storj_theme") as demo:
-    gr.Markdown(DESCRIPTION)
-    gr.DuplicateButton(
-        value="Duplicate Space for private use",
-        elem_id="duplicate-button",
-        visible=os.getenv("SHOW_DUPLICATE_BUTTON") == "1",
-    )
-    with gr.Group():
-        with gr.Row():
+    with gr.Row():
+        with gr.Column(scale=1):
             prompt = gr.Text(
                 label="Prompt",
                 show_label=False,
@@ -320,121 +387,122 @@ with gr.Blocks(css=css, theme="bethecloud/storj_theme") as demo:
                 placeholder="Enter your prompt",
                 container=False,
             )
-            run_button = gr.Button("Run")
-        result = gr.Gallery(label="Grid", columns=1, preview=True)
+            run_button = gr.Button("Generate  as  (1024 x 1024)🍺", scale=0, elem_classes="submit-btn")
+        
+            with gr.Row(visible=True):
+                grid_size_selection = gr.Dropdown(
+                    choices=["2x1", "1x2", "2x2", "2x3", "3x2", "1x1"],
+                    value="1x1",
+                    label="Grid Size"
+                )
 
+            with gr.Row(visible=True):
+                filter_selection = gr.Dropdown(
+                    show_label=True,
+                    container=True,
+                    interactive=True,
+                    choices=FILTER_NAMES,
+                    value=DEFAULT_FILTER_NAME,
+                    label="Filter Type",
+                )
 
-    with gr.Row(visible=True):
-        filter_selection = gr.Radio(
-            show_label=True,
-            container=True,
-            interactive=True,
-            choices=FILTER_NAMES,
-            value=DEFAULT_FILTER_NAME,
-            label="Filter Type",
-        )
+            with gr.Row(visible=True):
+                collage_style_selection = gr.Dropdown(
+                    show_label=True,
+                    container=True,
+                    interactive=True,
+                    choices=COLLAGE_STYLE_NAMES,
+                    value=DEFAULT_COLLAGE_STYLE_NAME,
+                    label="Collage Template + Duotone Canvas",
+                )
 
-    with gr.Row(visible=True):
-        style_selection = gr.Radio(
-            show_label=True,
-            container=True,
-            interactive=True,
-            choices=STYLE_NAMES,
-            value=DEFAULT_STYLE_NAME,
-            label="Quality Style",
-        )
+            with gr.Row(visible=True):
+                style_selection = gr.Dropdown(
+                    show_label=True,
+                    container=True,
+                    interactive=True,
+                    choices=STYLE_NAMES,
+                    value=DEFAULT_STYLE_NAME,
+                    label="Quality Style",
+                )
 
-    with gr.Row(visible=True):
-        collage_style_selection = gr.Radio(
-            show_label=True,
-            container=True,
-            interactive=True,
-            choices=COLLAGE_STYLE_NAMES,
-            value=DEFAULT_COLLAGE_STYLE_NAME,
-            label="Collage Template",
-        )
-    with gr.Row(visible=True):
-        grid_size_selection = gr.Dropdown(
-            choices=["2x1", "1x2", "2x2", "2x3", "3x2", "1x1"],
-            value="2x2",
-            label="Grid Size"
-        )
+            with gr.Accordion("Advanced options", open=False):
+                use_negative_prompt = gr.Checkbox(label="Use negative prompt", value=True, visible=True)
+                negative_prompt = gr.Text(
+                    label="Negative prompt",
+                    max_lines=1,
+                    placeholder="Enter a negative prompt",
+                    value="(deformed, distorted, disfigured:1.3), poorly drawn, bad anatomy, wrong anatomy, extra limb, missing limb, floating limbs, (mutated hands and fingers:1.4), disconnected limbs, mutation, mutated, ugly, disgusting, blurry, amputation",
+                    visible=True,
+                )
+                with gr.Row():
+                    num_inference_steps = gr.Slider(
+                        label="Steps",
+                        minimum=10,
+                        maximum=60,
+                        step=1,
+                        value=30,
+                    )
+                with gr.Row():
+                    num_images_per_prompt = gr.Slider(
+                        label="Images",
+                        minimum=1,
+                        maximum=5,
+                        step=1,
+                        value=2,
+                    )
+                seed = gr.Slider(
+                    label="Seed",
+                    minimum=0,
+                    maximum=MAX_SEED,
+                    step=1,
+                    value=0,
+                    visible=True
+                )
+                randomize_seed = gr.Checkbox(label="Randomize seed", value=True)
 
-    with gr.Accordion("Advanced options", open=False):
-        use_negative_prompt = gr.Checkbox(label="Use negative prompt", value=True, visible=True)
-        negative_prompt = gr.Text(
-            label="Negative prompt",
-            max_lines=1,
-            placeholder="Enter a negative prompt",
-            value="(deformed, distorted, disfigured:1.3), poorly drawn, bad anatomy, wrong anatomy, extra limb, missing limb, floating limbs, (mutated hands and fingers:1.4), disconnected limbs, mutation, mutated, ugly, disgusting, blurry, amputation",
-            visible=True,
-        )
-        with gr.Row():
-            num_inference_steps = gr.Slider(
-                label="Steps",
-                minimum=10,
-                maximum=30,
-                step=1,
-                value=15,
+                with gr.Row(visible=True):
+                    width = gr.Slider(
+                        label="Width",
+                        minimum=512,
+                        maximum=2048,
+                        step=64,
+                        value=1024,
+                    )
+                    height = gr.Slider(
+                        label="Height",
+                        minimum=512,
+                        maximum=2048,
+                        step=64,
+                        value=1024,
+                    )
+
+                with gr.Row():
+                    guidance_scale = gr.Slider(
+                        label="Guidance Scale",
+                        minimum=0.1,
+                        maximum=20.0,
+                        step=0.1,
+                        value=6,
+                    )
+
+        with gr.Column(scale=2):
+            result = gr.Gallery(label="Result", columns=1, show_label=False)
+
+            gr.Examples(
+                examples=examples,
+                inputs=prompt,
+                outputs=[result, seed],
+                fn=generate,
+                cache_examples=CACHE_EXAMPLES,
             )
-        with gr.Row():
-            num_images_per_prompt = gr.Slider(
-                label="Images",
-                minimum=1,
-                maximum=5,
-                step=1,
-                value=2,
-            )
-        seed = gr.Slider(
-            label="Seed",
-            minimum=0,
-            maximum=MAX_SEED,
-            step=1,
-            value=0,
-            visible=True
+
+        use_negative_prompt.change(
+            fn=lambda x: gr.update(visible=x),
+            inputs=use_negative_prompt,
+            outputs=negative_prompt,
+            api_name=False,
         )
-        randomize_seed = gr.Checkbox(label="Randomize seed", value=True)
-
-        with gr.Row(visible=True):
-            width = gr.Slider(
-                label="Width",
-                minimum=512,
-                maximum=2048,
-                step=8,
-                value=1024,
-            )
-            height = gr.Slider(
-                label="Height",
-                minimum=512,
-                maximum=2048,
-                step=8,
-                value=1024,
-            )
-
-        with gr.Row():
-            guidance_scale = gr.Slider(
-                label="Guidance Scale",
-                minimum=0.1,
-                maximum=20.0,
-                step=0.1,
-                value=6,
-            )
-
-    gr.Examples(
-        examples=examples,
-        inputs=prompt,
-        outputs=[result, seed],
-        fn=generate,
-        #cache_examples=True,
-        cache_examples=CACHE_EXAMPLES,
-    )
-
-    use_negative_prompt.change(
-        fn=lambda x: gr.update(visible=x),
-        inputs=use_negative_prompt,
-        outputs=negative_prompt,
-        api_name=False,
-    )
 
     gr.on(
         triggers=[
@@ -462,4 +530,4 @@ with gr.Blocks(css=css, theme="bethecloud/storj_theme") as demo:
     )
 
 if __name__ == "__main__":
-    demo.queue(max_size=20).launch()
+    demo.queue(max_size=40).launch()
