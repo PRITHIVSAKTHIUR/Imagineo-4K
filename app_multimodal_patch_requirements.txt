@@ -1,5 +1,6 @@
 git+https://github.com/huggingface/diffusers.git
 git+https://github.com/huggingface/transformers.git@v4.49.0-AyaVision
+#if Gemma3-4B in Use, Install git+https://github.com/huggingface/transformers@v4.49.0-Gemma-3
 git+https://github.com/huggingface/accelerate.git
 safetensors
 sentencepiece
