@@ -33,18 +33,13 @@ MAX_SEED = np.iinfo(np.int32).max
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-# PROGRESS BAR HELPER
-
+# Helper function to return a progress bar HTML snippet.
 def progress_bar_html(label: str) -> str:
-    """
-    Returns an HTML snippet for a thin progress bar with a label.
-    The progress bar is styled as a dark red animated bar.
-    """
     return f'''
 <div style="display: flex; align-items: center;">
     <span style="margin-right: 10px; font-size: 14px;">{label}</span>
-    <div style="width: 110px; height: 5px; background-color: #FFA07A; border-radius: 2px; overflow: hidden;">
-        <div style="width: 100%; height: 100%; background-color: #FF4500; animation: loading 1.5s linear infinite;"></div>
+    <div style="width: 110px; height: 5px; background-color: #F0FFF0; border-radius: 2px; overflow: hidden;">
+        <div style="width: 100%; height: 100%; background-color: #00FF00 ; animation: loading 1.5s linear infinite;"></div>
     </div>
 </div>
 <style>
@@ -413,7 +408,9 @@ demo = gr.ChatInterface(
     ],
     examples=[
         [{"text": "@gemma3-4b Explain the Image", "files": ["examples/3.jpg"]}],
-        [{"text": "@gemma3-4b Extract as JSON", "files": ["examples/4.jpg"]}],
+        [{"text": "@gemma3-4b What's funny about this image ?", "files": ["examples/images.jpeg"]}],
+        [{"text": "@gemma3-4b Where do the major drought happen?", "files": ["examples/111.png"]}],
+        [{"text": "@gemma3-4b Transcription of the letter", "files": ["examples/222.png"]}],
         ['@lightningv5 Chocolate dripping from a donut'],
         ["Python Program for Array Rotation"],
         ["@tts1 Who is Nikola Tesla, and why did he die?"],
