@@ -1,20 +1,5 @@
----
-title: IMAGINEO 4K
-emoji: 🙅🏻
-colorFrom: indigo
-colorTo: green
-sdk: gradio
-sdk_version: 4.36.0
-app_file: app.py
-pinned: true
-license: creativeml-openrail-m
-header: mini
-short_description: Collage Template + Grid + Style
----
-
 
 ![alt text](assets/44.png)
-
  
 Check out the configuration reference at https://huggingface.co/docs/hub/spaces-config-reference
 
